@@ -39,6 +39,10 @@ public class HexMesh : MonoBehaviour
 		meshCollider.sharedMesh = hexMesh;
 	}
 
+	/// <summary>
+	/// CALLED FROM TRIANGULATE(CELLS)
+	/// </summary>
+	/// <param name="cell"></param>
 	void Triangulate(HexCell cell)
 	{
 		Vector3 center = cell.transform.localPosition;
@@ -53,6 +57,12 @@ public class HexMesh : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// CALLED FROM TRIANGULATE(CELL), ADDS THREE VERTICES TO VERTICES AND TRIANGLE LISTS
+	/// </summary>
+	/// <param name="v1"></param>
+	/// <param name="v2"></param>
+	/// <param name="v3"></param>
 	void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3)
 	{
 		int vertexIndex = vertices.Count;
@@ -63,7 +73,10 @@ public class HexMesh : MonoBehaviour
 		triangles.Add(vertexIndex + 1);
 		triangles.Add(vertexIndex + 2);
 	}
-
+	/// <summary>
+	/// ADDS COLOR DATA FOR EACH TRIANGLE
+	/// </summary>
+	/// <param name="color"></param>
 	void AddTriangleColor(Color color)
 	{
 		colors.Add(color);

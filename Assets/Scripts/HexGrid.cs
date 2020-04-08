@@ -5,20 +5,26 @@ using UnityEngine.UI;
 
 public class HexGrid : MonoBehaviour
 {
-  	public int width = 200;
-	public int height = 200;
+  	public int width = 0;
+	public int height = 0;
 	public HexCell cellPrefab;
-	HexCell[] cells;
+	public Color defaultColor = Color.white;
 	public Text cellLabelPrefab;
+	public static byte mapType;
+	HexCell[] cells;
 	Canvas gridCanvas;
 	HexMesh hexMesh;
-	public Color defaultColor = Color.white;
-	public Color touchedColor = Color.magenta;
+	//public Color touchedColor = Color.magenta;
+	
+	public int MapType { get { return mapType; } }
 
 	void Awake()
 	{
 		gridCanvas = GetComponentInChildren<Canvas>();
 		hexMesh = GetComponentInChildren<HexMesh>();
+		mapType = 1;
+		HexMetrics.Init(mapType);
+		
 
 		cells = new HexCell[height * width];
 
@@ -36,67 +42,69 @@ public class HexGrid : MonoBehaviour
 		hexMesh.Triangulate(cells);
 	}
 
-	void Update()
-	{
-		if (Input.GetMouseButton(0))
-		{
-			HandleInput();
-		}
-	}
-
 	void CreateCell(int x, int z, int i)
 	{
-		//POINTY TOP HEX
 		Vector3 position;
-		position.x = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f);
-		position.y = 0f;
-		position.z = z * (HexMetrics.outerRadius * 1.5f);
-		////
-
-		////FLAT TOP HEX
-		/////NOTE:  MUST FIX TO CORRESPOND TO USE AXIAL COORDS...BY "UNDOING HORIZONTAL SHIFT" (IE, FOR POINTY-TOP, DELETED "-Z/2 FROM FIRST PAR
-		//Vector3 position;
-		//position.x = x * (HexMetrics.outerRadius * 1.5f);
-		//position.y = 0f;
-		//position.z = (z + x * 0.5f - x / 2) * (HexMetrics.innerRadius * 2f);
-		////////
+		switch (mapType)
+		{
+			case 0: //POINTY-TOP HEX
+				position.x = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f);
+				position.y = 0f;
+				position.z = z * (HexMetrics.outerRadius * 1.5f);
+				break;
+			case 1: //FLAT-TOP HEX
+				position.x = x * (HexMetrics.outerRadius * 1.5f);
+				position.y = 0f;
+				position.z = (z + x * 0.5f - x / 2) * (HexMetrics.innerRadius * 2f);
+				break;
+			default:
+				position.x = 0f;
+				position.y = 0f;
+				position.z = 0f;
+				break;
+		}
 
 		HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
 		cell.transform.SetParent(transform, false);
 		cell.transform.localPosition = position;
 		cell.coordinates = HexCoordConvert.FromOffsetCoordinates(x, z);
+		
 		int y = (-x - z);
-		cell.name = x + ", " + y + ", " + z;
+		cell.name = cell.coordinates.ToString(); //FOR CELL NAME IN AXIAL COORDS
+		//cell.name = (x + ", " + y + ". " + z); //FOR CELL NAME IN OFFSET COORDS
 
 		Text label = Instantiate<Text>(cellLabelPrefab);
 		label.rectTransform.SetParent(gridCanvas.transform, false);
 		label.rectTransform.anchoredPosition = new Vector2(position.x, position.z);
 		label.text = cell.coordinates.ToStringOnSeparateLines();
-		label.name = "Label " + x + ", " + y + ", " + z;
+		label.name = "Label " + cell.coordinates.ToString();
 
 		cell.color = defaultColor;
 	}
 
-	void HandleInput()
+	public void ColorCell(Vector3 position, Color color)
 	{
-		Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-		RaycastHit hit;
-		if (Physics.Raycast(inputRay, out hit))
-		{
-			TouchCell(hit.point);
-		}
-	}
-
-	void TouchCell(Vector3 position)
-	{
+		int index;
 		position = transform.InverseTransformPoint(position);
 		HexCoordConvert coordinates = HexCoordConvert.FromPosition(position);
 		Debug.Log("touched at " + coordinates.ToString());
 
-		//POINT-TOP ONLY?
-		int index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
+		////TO COLORIZE CELLS
+		switch(mapType) 
+		{
+			case 0:  //POINTY-TOP HEX
+				index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
+				break;
+			case 1: //FLAT TOP HEX
+				index = (coordinates.Z + coordinates.X / 2) * width + coordinates.X;
+				break;
+			default:
+				index = 0;
+				break;
+		}
+
 		HexCell cell = cells[index];
-		cell.color = touchedColor;
+		cell.color = color;
 		hexMesh.Triangulate(cells);
 	}
 }

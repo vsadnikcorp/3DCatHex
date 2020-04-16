@@ -8,8 +8,7 @@ public class HexGrid : MonoBehaviour
   	public int width = 0;
 	public int height = 0;
 	public HexCell cellPrefab;
-	//public Color defaultColor = Color.white;
-	public byte defaultTerrain = 0;
+	public byte defaultTerrain;
 	public byte activeTerrain;
 	public Text cellLabelPrefab;
 	public static byte mapType;
@@ -37,7 +36,6 @@ public class HexGrid : MonoBehaviour
 				CreateCell(x, z, i++);
 			}
 		}
-
 	}
 
 	void Start()

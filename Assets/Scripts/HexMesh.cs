@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class HexMesh : MonoBehaviour
@@ -9,16 +10,20 @@ public class HexMesh : MonoBehaviour
 	List<Vector3> vertices;
 	List<int> triangles;
 	MeshCollider meshCollider;
-	List<Color> colors;
+	List<Color> terraingfx;
+ 	List<byte> terraintypes;
 
 	void Awake()
 	{
 		GetComponent<MeshFilter>().mesh = hexMesh = new Mesh();
 		meshCollider = gameObject.AddComponent<MeshCollider>();
 		hexMesh.name = "Hex Mesh";
+		//CHANGES MESH INDEX TO 32BIT, WHICH ALLOWS UP TO 4 BILLION VERTICES INSTEAD OF 65K
+		hexMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
 		vertices = new List<Vector3>();
 		triangles = new List<int>();
-		colors = new List<Color>();
+		terraingfx = new List<Color>();
+		terraintypes = new List<byte>();
 	}
 
 	public void Triangulate(HexCell[] cells)
@@ -26,7 +31,9 @@ public class HexMesh : MonoBehaviour
 		hexMesh.Clear();
 		vertices.Clear();
 		triangles.Clear();
-		colors.Clear();
+		terraingfx.Clear();
+
+		terraintypes.Clear();
 
 		for (int i = 0; i < cells.Length; i++)
 		{
@@ -34,7 +41,8 @@ public class HexMesh : MonoBehaviour
 		}
 		hexMesh.vertices = vertices.ToArray();
 		hexMesh.triangles = triangles.ToArray();
-		hexMesh.colors = colors.ToArray();
+		hexMesh.colors = terraingfx.ToArray();
+		
 		hexMesh.RecalculateNormals();
 		meshCollider.sharedMesh = hexMesh;
 	}
@@ -53,9 +61,11 @@ public class HexMesh : MonoBehaviour
 				center + HexMetrics.corners[i],
 				center + HexMetrics.corners[i+1]
 			);
-			AddTriangleColor(cell.color);
+			//byte terrainType =	0;  //sets default terrain as of 15/04/20
+			Color terrainGFX = SetTerrainGFX(cell.terraintype);
+			AddTriangleColor(terrainGFX); 
 		}
-	}
+	} 
 
 	/// <summary>
 	/// CALLED FROM TRIANGULATE(CELL), ADDS THREE VERTICES TO VERTICES AND TRIANGLE LISTS
@@ -77,10 +87,31 @@ public class HexMesh : MonoBehaviour
 	/// ADDS COLOR DATA FOR EACH TRIANGLE
 	/// </summary>
 	/// <param name="color"></param>
+	public Color SetTerrainGFX(int terrainType)
+	{
+		Color terrainGFX = Color.white;
+		switch(terrainType)
+		{
+			case 0:
+				terrainGFX = Color.yellow;
+				break;
+			case 1:
+				terrainGFX = Color.green;
+				break;
+			case 2:
+				terrainGFX = Color.grey;
+				break;
+			case 3:
+				terrainGFX = Color.blue;
+				break;
+		}
+		return terrainGFX;
+	}
+	
 	void AddTriangleColor(Color color)
 	{
-		colors.Add(color);
-		colors.Add(color);
-		colors.Add(color);
+		terraingfx.Add(color);
+		terraingfx.Add(color);
+		terraingfx.Add(color);
 	}
 }

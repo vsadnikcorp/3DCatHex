@@ -8,23 +8,25 @@ public class HexGrid : MonoBehaviour
   	public int width = 0;
 	public int height = 0;
 	public HexCell cellPrefab;
-	public Color defaultColor = Color.white;
+	//public Color defaultColor = Color.white;
+	public byte defaultTerrain = 0;
+	public byte activeTerrain;
 	public Text cellLabelPrefab;
 	public static byte mapType;
 	HexCell[] cells;
 	Canvas gridCanvas;
 	HexMesh hexMesh;
-	//public Color touchedColor = Color.magenta;
-	
+
 	public int MapType { get { return mapType; } }
 
 	void Awake()
 	{
 		gridCanvas = GetComponentInChildren<Canvas>();
 		hexMesh = GetComponentInChildren<HexMesh>();
-		mapType = 1;
+
+		mapType = 0;
 		HexMetrics.Init(mapType);
-		
+		Camera.main.orthographicSize = 50.0f;
 
 		cells = new HexCell[height * width];
 
@@ -35,6 +37,7 @@ public class HexGrid : MonoBehaviour
 				CreateCell(x, z, i++);
 			}
 		}
+
 	}
 
 	void Start()
@@ -79,10 +82,10 @@ public class HexGrid : MonoBehaviour
 		label.text = cell.coordinates.ToStringOnSeparateLines();
 		label.name = "Label " + cell.coordinates.ToString();
 
-		cell.color = defaultColor;
+		cell.terraintype = defaultTerrain;
 	}
 
-	public void ColorCell(Vector3 position, Color color)
+	public void GetCellAt(Vector3 position, byte activeterraintype)
 	{
 		int index;
 		position = transform.InverseTransformPoint(position);
@@ -90,21 +93,24 @@ public class HexGrid : MonoBehaviour
 		Debug.Log("touched at " + coordinates.ToString());
 
 		////TO COLORIZE CELLS
-		switch(mapType) 
+		if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
 		{
-			case 0:  //POINTY-TOP HEX
-				index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
-				break;
-			case 1: //FLAT TOP HEX
-				index = (coordinates.Z + coordinates.X / 2) * width + coordinates.X;
-				break;
-			default:
-				index = 0;
-				break;
+			switch (mapType)
+			{
+				case 0:  //POINTY-TOP HEX
+					index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
+					break;
+				case 1: //FLAT TOP HEX
+					index = (coordinates.Z + coordinates.X / 2) * width + coordinates.X;
+					break;
+				default:
+					index = 0;
+					break;
+			}
+			HexCell cell = cells[index];
+			cell.terraintype = activeterraintype;
+			cell.terraingfx = hexMesh.SetTerrainGFX(activeterraintype);
+			hexMesh.Triangulate(cells);
 		}
-
-		HexCell cell = cells[index];
-		cell.color = color;
-		hexMesh.Triangulate(cells);
 	}
 }

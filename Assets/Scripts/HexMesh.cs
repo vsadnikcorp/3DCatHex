@@ -18,6 +18,7 @@ public class HexMesh : MonoBehaviour
 		GetComponent<MeshFilter>().mesh = hexMesh = new Mesh();
 		meshCollider = gameObject.AddComponent<MeshCollider>();
 		hexMesh.name = "Hex Mesh";
+
 		//CHANGES MESH INDEX TO 32BIT, WHICH ALLOWS UP TO 4 BILLION VERTICES INSTEAD OF 65K
 		hexMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
 		vertices = new List<Vector3>();
@@ -61,8 +62,10 @@ public class HexMesh : MonoBehaviour
 				center + HexMetrics.corners[i],
 				center + HexMetrics.corners[i+1]
 			);
-			//byte terrainType =	0;  //sets default terrain as of 15/04/20
-			Color terrainGFX = SetTerrainGFX(cell.terraintype);
+			//Color terrainGFX = EditorController.SetTerrainGFX(cell.terraintype);
+			//Color terrainGFX = EditorController.SetTerrainGFX(cell);
+			byte terraintype = cell.terraintype;
+			Color terrainGFX = EditorController.SetTerrainGFX(cell, terraintype);
 			AddTriangleColor(terrainGFX); 
 		}
 	} 
@@ -82,30 +85,6 @@ public class HexMesh : MonoBehaviour
 		triangles.Add(vertexIndex);
 		triangles.Add(vertexIndex + 1);
 		triangles.Add(vertexIndex + 2);
-	}
-	/// <summary>
-	/// ADDS COLOR DATA FOR EACH TRIANGLE
-	/// </summary>
-	/// <param name="color"></param>
-	public Color SetTerrainGFX(int terrainType)
-	{
-		Color terrainGFX = Color.white;
-		switch(terrainType)
-		{
-			case 0:
-				terrainGFX = Color.yellow;
-				break;
-			case 1:
-				terrainGFX = Color.green;
-				break;
-			case 2:
-				terrainGFX = Color.grey;
-				break;
-			case 3:
-				terrainGFX = Color.blue;
-				break;
-		}
-		return terrainGFX;
 	}
 	
 	void AddTriangleColor(Color color)

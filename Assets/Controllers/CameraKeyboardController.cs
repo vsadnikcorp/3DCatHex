@@ -5,12 +5,7 @@ using UnityEngine;
 public class CameraKeyboardController : MonoBehaviour
 {
     float moveSpeed = 75f;
-
-    void Start()
-    {
-
-    }
-
+    
     void Update()
     {
         Vector3 moveCamera = new Vector3

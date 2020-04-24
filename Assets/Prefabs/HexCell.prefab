@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3698472144950310996}
   m_Layer: 0
   m_Name: HexCell
-  m_TagString: Untagged
+  m_TagString: HexCell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -43,3 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b98bf6e36131dc4f9e3428b00627d17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coordinates:
+    x: 0
+    z: 0
+  terraintype: 0
+  terraingfx: {r: 0, g: 0, b: 0, a: 0}

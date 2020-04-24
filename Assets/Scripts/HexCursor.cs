@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,8 +9,13 @@ public class HexCursor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        byte mapType = 0;
+        this.GetComponentInChildren<SpriteRenderer>().sprite = hexSprite;
+    }
 
+    public void Init(int mapType, HexCursor hexCursor)
+    //public void Init(int mapType)
+    {
+        hexCursor.tag = "HexCursor";
         switch (mapType)
         {
             case 0:
@@ -19,7 +25,11 @@ public class HexCursor : MonoBehaviour
                 hexSprite = Resources.Load<Sprite>("Sprites/HexSpriteFlat");
                 break;
         }
-        this.GetComponentInChildren<SpriteRenderer>().sprite = hexSprite;
+        hexCursor.GetComponentInChildren<SpriteRenderer>().sprite = hexSprite;
     }
-       
+
+    //public static implicit operator GameObject(HexCursor v)
+    //{
+    //    throw new NotImplementedException();
+    //}
 }

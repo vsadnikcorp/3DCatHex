@@ -5,14 +5,11 @@ using UnityEngine;
 public class CameraMouseController : MonoBehaviour
 {
     Vector3 lastFramePosition;
-    private float zoomSpeed = 10.0f;
+    private float zoomSpeed = 20.0f;
     private float minOrtho = 20.0f;
-    private float maxOrtho = 300.0f;
-
-    void Start()
-    {
-    }
-
+    //TODO:  FIX MAX ORTHO TO 8*numberrows
+    private float maxOrtho = 500.0f;
+       
     void Update()
     {
         Vector3 currentFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);

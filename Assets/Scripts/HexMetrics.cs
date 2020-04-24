@@ -6,10 +6,9 @@ public static class HexMetrics
 {
 	public const float outerRadius = 10f;
 	public const float innerRadius = outerRadius * 0.8660254037844f;
-	static byte mapType = HexGrid.mapType;
 	public static Vector3[] corners = new Vector3[7];
 
-	public static void Init(byte mapType)
+	public static void Init(int mapType)
 	{
 		switch (mapType)
 		{

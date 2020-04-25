@@ -126,8 +126,6 @@ public struct HexCoordinates
         float vx = 0f;
         float vy = 0f;
 
-        Debug.Log("hx: " + hx + ", hy: " + hy + ", hz: " + hz);
-
         switch(maptype)
         {
             case 0:  //POINTY-TOP HEXES

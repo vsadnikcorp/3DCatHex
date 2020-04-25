@@ -30,25 +30,22 @@ public class MouseController : MonoBehaviour
 		if (Physics.Raycast(inputRay, out hit))
 		{
 			world.GetCellAt(hit.point);
-
-			////~~~~~~~~~~~~~~~~
-			Vector3 position = transform.InverseTransformPoint(hit.point);
-			//Debug.Log("mhit: " + hit.point); //SAME AS WORLD 
-			Vector3 dafuq = new Vector3(position.x, position.z, position.y); //SAME AS WPOSITION
-			
-			//Debug.Log("mposition: " + dafuq.ToString());
-			HexCoordinates coordinates = HexCoordinates.FromPosition(world.MapType, dafuq);//SAME AS WORLD COORDINATES
-			////world.hexCursor.transform.position = dafuq;
-			Debug.Log("dafuqed at: " + coordinates.ToString());
-
-			//_+_+_+_+_
-			Vector2 V2position = HexCoordinates.FromHexToScreen(world.MapType, coordinates);
-			world.hexCursor.transform.position = V2position;
-			//_+_+_+__+++_+
-
-			//Debug.Log("mcursor: " +	coordinates.X + ", " + coordinates.Y + ", " + coordinates.Z);
-			//Debug.Log(hexCursor.transform.position);
+			UpdateCursorPosition(hit.point);
+			//Vector3 position = transform.InverseTransformPoint(hit.point);
+			//Vector3 correctPosition = new Vector3(position.x, position.z, position.y); 
+			//HexCoordinates coordinates = HexCoordinates.FromPosition(world.MapType, correctPosition);
+			//Vector2 V2position = HexCoordinates.FromHexToScreen(world.MapType, coordinates);
+			//world.hexCursor.transform.position = V2position;
 		}
+	}
+
+	void UpdateCursorPosition(Vector3 vposition)
+	{
+		Vector3 position = transform.InverseTransformPoint(vposition);
+		Vector3 correctPosition = new Vector3(position.x, position.z, position.y);
+		HexCoordinates coordinates = HexCoordinates.FromPosition(world.MapType, correctPosition);
+		Vector2 V2position = HexCoordinates.FromHexToScreen(world.MapType, coordinates);
+		world.hexCursor.transform.position = V2position;
 	}
 		
 }

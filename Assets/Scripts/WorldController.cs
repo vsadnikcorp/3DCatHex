@@ -94,11 +94,9 @@ public class WorldController : MonoBehaviour
 	//public void GetCellAt(Vector3 position, byte activeterraintype)
 	public void GetCellAt(Vector3 position)
 	{
-		//Debug.Log("whit: " + position); //SAME AS MOUSE
 		int index;
 		int maptype = this.MapType;
 		position = transform.InverseTransformPoint(position);
-		//Debug.Log("wposition: " + position.ToString()); //SAME AS DAFUQ
 		HexCoordinates coordinates = HexCoordinates.FromPosition(maptype, position); //SAME AS MOUSE COORDINATES
 		Debug.Log("touched at " + coordinates.ToString());
 		

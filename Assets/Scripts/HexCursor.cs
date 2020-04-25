@@ -12,10 +12,10 @@ public class HexCursor : MonoBehaviour
         this.GetComponentInChildren<SpriteRenderer>().sprite = hexSprite;
     }
 
-    public void Init(int mapType, HexCursor hexCursor)
-    //public void Init(int mapType)
+    //public void Init(int mapType, HexCursor hexCursor)
+    public void Init(int mapType)
     {
-        hexCursor.tag = "HexCursor";
+        //this.tag = "HexCursor";
         switch (mapType)
         {
             case 0:
@@ -25,7 +25,7 @@ public class HexCursor : MonoBehaviour
                 hexSprite = Resources.Load<Sprite>("Sprites/HexSpriteFlat");
                 break;
         }
-        hexCursor.GetComponentInChildren<SpriteRenderer>().sprite = hexSprite;
+        this.GetComponentInChildren<SpriteRenderer>().sprite = hexSprite;
     }
 
     //public static implicit operator GameObject(HexCursor v)

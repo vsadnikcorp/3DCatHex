@@ -1083,7 +1083,7 @@ MonoBehaviour:
     type: 3}
   activeTerrain: 0
   cellLabelPrefab: {fileID: 1491524417}
-  hexCursorPrefab: {fileID: 1363949204}
+  hexCursor: {fileID: 1363949203}
 --- !u!4 &612883810
 Transform:
   m_ObjectHideFlags: 0
@@ -3153,13 +3153,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 1
+--- !u!1 &1363949203 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3125679182742730354, guid: 31462f0368e2daa4d991cdecde5b1461,
+    type: 3}
+  m_PrefabInstance: {fileID: 1656236092}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1363949204 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1363949204, guid: 31462f0368e2daa4d991cdecde5b1461,
     type: 3}
   m_PrefabInstance: {fileID: 1656236092}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1363949203}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7cb0daa356a75f64cbc97644b733e7ee, type: 3}

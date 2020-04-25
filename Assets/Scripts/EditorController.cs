@@ -102,9 +102,5 @@ public class EditorController : MonoBehaviour
 		{
 			Destroy(go);
 		}
-		foreach (GameObject go in GameObject.FindGameObjectsWithTag("HexCursor"))
-		{
-			Destroy(go);
-		}
 	}
 }

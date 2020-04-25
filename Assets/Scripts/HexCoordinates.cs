@@ -116,4 +116,30 @@ public struct HexCoordinates
         }
         return new HexCoordinates(iX, iZ);
     }
+
+    public static Vector2 FromHexToScreen(int maptype, HexCoordinates coordinates)
+    {
+        Vector2 V2position;
+        int hx = coordinates.X;
+        int hy = coordinates.Y;
+        int hz = coordinates.Z;
+        float vx = 0f;
+        float vy = 0f;
+
+        Debug.Log("hx: " + hx + ", hy: " + hy + ", hz: " + hz);
+
+        switch(maptype)
+        {
+            case 0:  //POINTY-TOP HEXES
+                vx = (HexMetrics.innerRadius * 2f) * hx + (HexMetrics.innerRadius) * hz;
+                vy = (HexMetrics.outerRadius * 3f) / 2 * hz; 
+                break;
+            case 1:  //FLAT-TOP HEXES
+                vx = HexMetrics.outerRadius * 3f / 2 * hx;
+                vy = hz * HexMetrics.innerRadius * 2f + hx * (HexMetrics.innerRadius);
+                break;
+        }
+        V2position = new Vector2(vx, vy);
+        return V2position;
+    }
 }

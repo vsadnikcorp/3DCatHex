@@ -8,8 +8,8 @@ public class WorldController : MonoBehaviour
 	public HexCell cellPrefab;
 	public byte activeTerrain;
 	public Text cellLabelPrefab;
-	public HexCursor hexCursorPrefab;
-	
+	public GameObject hexCursor;
+
 	public int MapType { get; protected set; }
 	public short NumberColumns { get; protected set; }
 	public short NumberRows { get; protected set; }
@@ -17,18 +17,19 @@ public class WorldController : MonoBehaviour
 	HexCell[] cells;
 	Canvas gridCanvas;
 	HexMesh hexMesh;
-	HexCursor hexCursor;
 
 	public void CreateMap(int mapType, byte defaultterraintype, short numbercolumns, short numberrows)
 	{
 		gridCanvas = GetComponentInChildren<Canvas>();
 		hexMesh = GetComponentInChildren<HexMesh>();
-		HexCursor hexCursor = Instantiate<HexCursor>(hexCursorPrefab);
 		this.MapType = mapType;
 		this.NumberColumns = numbercolumns;
 		this.NumberRows = numberrows;
 		HexMetrics.Init(mapType);
-		hexCursor.Init(mapType, hexCursor);
+
+		hexCursor.SetActive(true);
+		hexCursor.GetComponent<HexCursor>().Init(mapType);
+
 		Camera.main.orthographicSize = 50.0f;
 
 		cells = new HexCell[numberrows * numbercolumns];
@@ -41,6 +42,7 @@ public class WorldController : MonoBehaviour
 			}
 		}
 		hexMesh.Triangulate(cells);
+
 		//TODO:  CENTER CAMERA ON MAP--LINE BELOW KIND OF WORKS, BUT MATH LOOKS OFF
 		//Camera.main.transform.position = new Vector2(numbercolumns * (int)HexMetrics.innerRadius, numberrows * (int)HexMetrics.innerRadius);
 	}
@@ -92,10 +94,12 @@ public class WorldController : MonoBehaviour
 	//public void GetCellAt(Vector3 position, byte activeterraintype)
 	public void GetCellAt(Vector3 position)
 	{
+		//Debug.Log("whit: " + position); //SAME AS MOUSE
 		int index;
 		int maptype = this.MapType;
 		position = transform.InverseTransformPoint(position);
-		HexCoordinates coordinates = HexCoordinates.FromPosition(maptype, position);
+		//Debug.Log("wposition: " + position.ToString()); //SAME AS DAFUQ
+		HexCoordinates coordinates = HexCoordinates.FromPosition(maptype, position); //SAME AS MOUSE COORDINATES
 		Debug.Log("touched at " + coordinates.ToString());
 		
 		//GET CELL INDEX
@@ -112,7 +116,7 @@ public class WorldController : MonoBehaviour
 				break;
 		}
 		HexCell cell = cells[index];
-
+		 
 		////TO COLORIZE CELLS
 		if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
 		{

@@ -22,20 +22,10 @@ public class MouseController : MonoBehaviour
 		Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
 
-		//**TESTING FOR POINTS~~
-		Vector3 currentMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		//HexCell hexUnderMouse = GetHexAtWorldCoordinate(currentMousePosition);
-		//**~~~
-
 		if (Physics.Raycast(inputRay, out hit))
 		{
 			world.GetCellAt(hit.point);
 			UpdateCursorPosition(hit.point);
-			//Vector3 position = transform.InverseTransformPoint(hit.point);
-			//Vector3 correctPosition = new Vector3(position.x, position.z, position.y); 
-			//HexCoordinates coordinates = HexCoordinates.FromPosition(world.MapType, correctPosition);
-			//Vector2 V2position = HexCoordinates.FromHexToScreen(world.MapType, coordinates);
-			//world.hexCursor.transform.position = V2position;
 		}
 	}
 

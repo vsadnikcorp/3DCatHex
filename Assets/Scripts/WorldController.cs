@@ -97,7 +97,7 @@ public class WorldController : MonoBehaviour
 		int index;
 		int maptype = this.MapType;
 		position = transform.InverseTransformPoint(position);
-		HexCoordinates coordinates = HexCoordinates.FromPosition(maptype, position); //SAME AS MOUSE COORDINATES
+		HexCoordinates coordinates = HexCoordinates.FromPosition(maptype, position);
 		Debug.Log("touched at " + coordinates.ToString());
 		
 		//GET CELL INDEX

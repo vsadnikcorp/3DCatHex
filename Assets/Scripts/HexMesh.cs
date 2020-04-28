@@ -7,11 +7,15 @@ using System.Linq;
 public class HexMesh : MonoBehaviour
 {
 	Mesh hexMesh;
-	List<Vector3> vertices;
-	List<int> triangles;
+	//List<Vector3> vertices;
+	//List<int> triangles;
+	//List<Color> terraingfx;
 	MeshCollider meshCollider;
-	List<Color> terraingfx;
- 	List<byte> terraintypes;
+	List<byte> terraintypes;
+
+	static List<Vector3> vertices = new List<Vector3>();
+	static List<Color> terraingfx = new List<Color>();
+	static List<int> triangles = new List<int>();
 
 	void Awake()
 	{
@@ -21,9 +25,9 @@ public class HexMesh : MonoBehaviour
 
 		//CHANGES MESH INDEX TO 32BIT, WHICH ALLOWS UP TO 4 BILLION VERTICES INSTEAD OF 65K
 		hexMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-		vertices = new List<Vector3>();
-		triangles = new List<int>();
-		terraingfx = new List<Color>();
+		//vertices = new List<Vector3>();
+		//triangles = new List<int>();
+		//terraingfx = new List<Color>();
 		terraintypes = new List<byte>();
 	}
 
@@ -35,8 +39,8 @@ public class HexMesh : MonoBehaviour
 		terraingfx.Clear();
 
 		terraintypes.Clear();
-
-		for (int i = 0; i < cells.Length; i++)
+		
+;		for (int i = 0; i < cells.Length; i++)
 		{
 			Triangulate(cells[i]);
 		}

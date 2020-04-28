@@ -15,7 +15,6 @@ public class HexCursor : MonoBehaviour
     //public void Init(int mapType, HexCursor hexCursor)
     public void Init(int mapType)
     {
-        //this.tag = "HexCursor";
         switch (mapType)
         {
             case 0:

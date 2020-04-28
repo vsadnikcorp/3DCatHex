@@ -14,9 +14,12 @@ public class EditorController : MonoBehaviour
 	public UnityEngine.UI.ToggleGroup toggleGroup;
 	public byte ActiveTerrainType { get; protected set; }
 	public byte DefaultTerrainType { get; protected set; }
-	public short NumberColumns { get; protected set; }
-	public short NumberRows { get; protected set; }
+	public int NumberColumns { get; protected set; }
+	public int NumberRows { get; protected set; }
 	public int MapType { get; protected set; }
+	public int ChunkColumns { get; protected set; }
+	public int ChunkRows { get; protected set; }
+	public int ChunkSize { get; protected set; }
 
 	public static byte GetDefaultTerrainType()
 	{
@@ -51,7 +54,7 @@ public class EditorController : MonoBehaviour
 				terraintype = 3;
 				break;
 			default:
-				Debug.Log("superdafuq");
+				Debug.Log("No terrain type assigned!");
 				break;
 		}
 		editor.ActiveTerrainType = terraintype;
@@ -86,21 +89,35 @@ public class EditorController : MonoBehaviour
 	{
 		if (world != null) ClearMap();
 		MapType = GameObject.Find("MapTypeDropdown").GetComponent<TMP_Dropdown>().value;
-		NumberColumns = Convert.ToInt16(GameObject.Find("MapXText").GetComponent<TMP_InputField>().text);
-		NumberRows = Convert.ToInt16(GameObject.Find("MapYText").GetComponent<TMP_InputField>().text);
+		//NumberColumns = Convert.ToInt16(GameObject.Find("MapXText").GetComponent<TMP_InputField>().text);
+		//NumberRows = Convert.ToInt16(GameObject.Find("MapYText").GetComponent<TMP_InputField>().text);
+		ChunkSize = Convert.ToInt32(GameObject.Find("ChunkSize").GetComponent<TMP_InputField>().text);
+		ChunkColumns = Convert.ToInt32(GameObject.Find("ChunkColumns").GetComponent<TMP_InputField>().text);
+		ChunkRows = Convert.ToInt32(GameObject.Find("ChunkRows").GetComponent<TMP_InputField>().text);
 		DefaultTerrainType = GetDefaultTerrainType();
-		world.CreateMap(MapType, DefaultTerrainType, NumberColumns, NumberRows);
+		//world.CreateMap(MapType, DefaultTerrainType, NumberColumns, NumberRows);
+		world.CreateMap(MapType, DefaultTerrainType, ChunkSize, ChunkColumns, ChunkRows);
 	}
 
 	public void ClearMap()
 	{
-		foreach (GameObject go in GameObject.FindGameObjectsWithTag("HexCell"))
+
+		foreach (GameObject go in GameObject.FindGameObjectsWithTag("Chunk"))
 		{
 			Destroy(go);
 		}
+		//foreach (GameObject go in GameObject.FindGameObjectsWithTag("HexCell"))
+		//{
+		//	Destroy(go);
+		//}
 		foreach (GameObject go in GameObject.FindGameObjectsWithTag("HexLabel"))
 		{
 			Destroy(go);
 		}
+	}
+	void EditCell()
+	{
+		
+		//world.RefreshWorld();
 	}
 }

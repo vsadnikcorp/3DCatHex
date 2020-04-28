@@ -7,6 +7,8 @@ public static class HexMetrics
 	public const float outerRadius = 10f;
 	public const float innerRadius = outerRadius * 0.8660254037844f;
 	public static Vector3[] corners = new Vector3[7];
+	//public const short chunkSizeX = 5;
+	//public const short chunkSizeZ = 5;
 
 	public static void Init(int mapType)
 	{
@@ -17,7 +19,7 @@ public static class HexMetrics
 					corners[0] = new Vector3(0f, 0f, outerRadius);
 					corners[1] = new Vector3(innerRadius, 0f, 0.5f * outerRadius);
 					corners[2] = new Vector3(innerRadius, 0f, -0.5f * outerRadius);
-					corners[3] =new Vector3(0f, 0f, -outerRadius);
+					corners[3] = new Vector3(0f, 0f, -outerRadius);
 					corners[4] = new Vector3(-innerRadius, 0f, -0.5f * outerRadius);
 					corners[5] = new Vector3(-innerRadius, 0f, 0.5f * outerRadius);
 					corners[6] = new Vector3(0f, 0f, outerRadius);
@@ -35,5 +37,7 @@ public static class HexMetrics
 				}
 				break;
 		}
+
+
 	}
 }

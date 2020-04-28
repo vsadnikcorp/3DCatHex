@@ -10,41 +10,68 @@ public class WorldController : MonoBehaviour
 	public Text cellLabelPrefab;
 	public GameObject hexCursor;
 
+	public ChunkController chunkPrefab;
+	ChunkController[] chunks;
+
 	public int MapType { get; protected set; }
-	public short NumberColumns { get; protected set; }
-	public short NumberRows { get; protected set; }
+	public int NumberHexColumns { get; protected set; }
+	public int NumberHexRows { get; protected set; }
+	public int ChunkSize { get; protected set; }
+	public int ChunkColumns { get; protected set; }
+	public int ChunkRows { get; protected set; }
 
 	HexCell[] cells;
-	Canvas gridCanvas;
-	HexMesh hexMesh;
 
-	public void CreateMap(int mapType, byte defaultterraintype, short numbercolumns, short numberrows)
+	public void CreateMap(int mapType, byte defaultterraintype, int chunksize, int chunkcolumns, int chunkrows)
 	{
-		gridCanvas = GetComponentInChildren<Canvas>();
-		hexMesh = GetComponentInChildren<HexMesh>();
 		this.MapType = mapType;
-		this.NumberColumns = numbercolumns;
-		this.NumberRows = numberrows;
-		HexMetrics.Init(mapType);
+		this.ChunkSize = chunksize;
+		this.ChunkColumns = chunkcolumns;
+		this.ChunkRows = chunkrows;
 
+		HexMetrics.Init(mapType);
 		hexCursor.SetActive(true);
 		hexCursor.GetComponent<HexCursor>().Init(mapType);
-
 		Camera.main.orthographicSize = 50.0f;
 
-		cells = new HexCell[numberrows * numbercolumns];
+		this.NumberHexColumns = chunkcolumns * chunksize;
+		this.NumberHexRows = chunkrows * chunksize;
 
-		for (int z = 0, i = 0; z < numberrows; z++)
-		{
-			for (int x = 0; x < numbercolumns; x++)
-			{
-				CreateCell(mapType, defaultterraintype, x, z, i++);
-			}
-		}
-		hexMesh.Triangulate(cells);
+		CreateChunks();
+		CreateCells(mapType, defaultterraintype, this.NumberHexColumns, this.NumberHexRows);
 
 		//TODO:  CENTER CAMERA ON MAP--LINE BELOW KIND OF WORKS, BUT MATH LOOKS OFF
 		//Camera.main.transform.position = new Vector2(numbercolumns * (int)HexMetrics.innerRadius, numberrows * (int)HexMetrics.innerRadius);
+	}
+
+	void CreateChunks()
+	{
+		chunks = new ChunkController[ChunkColumns * ChunkRows];
+
+		for (int z = 0, i = 0; z < ChunkRows; z++)
+		{
+			for (int x = 0; x < ChunkColumns; x++)
+			{
+				ChunkController chunk = chunks[i++] = Instantiate(chunkPrefab);
+				chunk.Init(ChunkSize);
+				chunk.transform.SetParent(transform);
+				chunk.name = "chunk " + (i-1); //-1 MAKES CHUNK NAMES ZERO-BASED
+				chunk.tag = "Chunk";
+			}
+		}
+	}
+
+	void CreateCells(int maptype, byte defaultterraintype, int numberhexcolumns, int numberhexrows)
+	{
+		cells = new HexCell[numberhexcolumns * numberhexrows];
+
+		for (int z = 0, i = 0; z < numberhexrows; z++)
+		{
+			for (int x = 0; x < numberhexcolumns; x++)
+			{
+				CreateCell(maptype, defaultterraintype, x, z, i++);
+			}
+		}
 	}
 
 	void CreateCell(int maptype, byte defaultterraintype, int x, int z, int i)
@@ -69,7 +96,6 @@ public class WorldController : MonoBehaviour
 				break;
 		}
 		HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
-		cell.transform.SetParent(transform, false);
 		cell.transform.localPosition = position;
 		cell.coordinates = HexCoordinates.FromOffsetCoordinates(maptype, x, z);
 		
@@ -77,7 +103,6 @@ public class WorldController : MonoBehaviour
 		
 		Text label = Instantiate<Text>(cellLabelPrefab);
 		label.tag = "HexLabel";
-		label.rectTransform.SetParent(gridCanvas.transform, false);
 		label.rectTransform.anchoredPosition = new Vector2(position.x, position.z);
 		
 		//TODO:  GUI LABELS AXIAL VS OFFSET
@@ -87,12 +112,24 @@ public class WorldController : MonoBehaviour
 		//cell.name = (x + ", " + y + ". " + z); //FOR CELL NAME IN OFFSET COORDS
 
 		label.name = "Label " + cell.coordinates.ToString();
-
+		cell.uiRect = label.rectTransform;
 		cell.terraintype = defaultterraintype;
+		AddCellToChunk(x, z, cell);
 	}
 
-	//public void GetCellAt(Vector3 position, byte activeterraintype)
-	public void GetCellAt(Vector3 position)
+	void AddCellToChunk(int x, int z, HexCell cell)
+	{
+		int chunkX = x / ChunkSize;
+		int chunkZ = z / ChunkSize;
+
+		ChunkController chunk = chunks[chunkX + chunkZ * ChunkColumns];
+
+		int localX = x - chunkX * ChunkSize;
+		int localZ = z - chunkZ * ChunkSize;
+		chunk.AddCell(localX + localZ * ChunkSize, cell);
+	}
+
+	public HexCell GetHexCell(Vector3 position)
 	{
 		int index;
 		int maptype = this.MapType;
@@ -104,22 +141,28 @@ public class WorldController : MonoBehaviour
 		switch (maptype)
 		{
 			case 0:  //POINTY-TOP HEX
-				index = coordinates.X + coordinates.Z * NumberColumns + coordinates.Z / 2;
+				index = coordinates.X + coordinates.Z * NumberHexColumns + coordinates.Z / 2;
 				break;
 			case 1: //FLAT TOP HEX
-				index = (coordinates.Z + coordinates.X / 2) * NumberColumns + coordinates.X;
+				index = (coordinates.Z + coordinates.X / 2) * NumberHexColumns + coordinates.X;
 				break;
 			default:
 				index = 0;
 				break;
 		}
 		HexCell cell = cells[index];
-		 
+		
 		////TO COLORIZE CELLS
-		if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-		{
-			cell.terraintype = EditorController.GetActiveTerrainType();
-			hexMesh.Triangulate(cells);
-		}
+		//if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+		//{
+		//	cell.terraintype = EditorController.GetActiveTerrainType();
+		//	//hexMesh.Triangulate(cells); //CHUNKS
+		//}
+
+		return cell;
+		
+	}
+	public void RefreshWorld()
+	{
 	}
 }

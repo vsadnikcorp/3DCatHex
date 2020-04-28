@@ -137,7 +137,7 @@ public struct HexCoordinates
                 vy = hz * HexMetrics.innerRadius * 2f + hx * (HexMetrics.innerRadius);
                 break;
         }
-        V2position = new Vector2(vx, vy);
+        V2position = new Vector3(vx, vy);
         return V2position;
     }
 }

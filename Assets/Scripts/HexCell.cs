@@ -26,6 +26,7 @@ public class HexCell : MonoBehaviour
             }
             Debug.Log("t3:" + terraintype + "value: " + value);
             terraintype = value;
+            //TerrainType = value;
             RefreshCell(); 
         }
     }

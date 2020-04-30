@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class WorldController : MonoBehaviour
 {
@@ -36,7 +37,7 @@ public class WorldController : MonoBehaviour
 
 		this.NumberHexColumns = chunkcolumns * chunksize;
 		this.NumberHexRows = chunkrows * chunksize;
-
+		//if (chunks != null) Array.Clear(chunks, 0, chunks.Length);
 		CreateChunks();
 		CreateCells(mapType, defaultterraintype, this.NumberHexColumns, this.NumberHexRows);
 
@@ -55,7 +56,7 @@ public class WorldController : MonoBehaviour
 				ChunkController chunk = chunks[i++] = Instantiate(chunkPrefab);
 				chunk.Init(ChunkSize);
 				chunk.transform.SetParent(transform);
-				chunk.name = "chunk " + (i-1); //-1 MAKES CHUNK NAMES ZERO-BASED
+				chunk.name = "chunk_" + (i-1); //-1 MAKES CHUNK NAMES ZERO-BASED
 				chunk.tag = "Chunk";
 			}
 		}
@@ -63,7 +64,9 @@ public class WorldController : MonoBehaviour
 
 	void CreateCells(int maptype, byte defaultterraintype, int numberhexcolumns, int numberhexrows)
 	{
+		
 		cells = new HexCell[numberhexcolumns * numberhexrows];
+		Debug.Log("array" + cells.Length.ToString());
 
 		for (int z = 0, i = 0; z < numberhexrows; z++)
 		{
@@ -129,7 +132,7 @@ public class WorldController : MonoBehaviour
 		chunk.AddCell(localX + localZ * ChunkSize, cell);
 	}
 
-	public HexCell GetHexCell(Vector3 position)
+	public HexCell GetHexCellFromScreen(Vector3 position)
 	{
 		int index;
 		int maptype = this.MapType;
@@ -151,16 +154,40 @@ public class WorldController : MonoBehaviour
 				break;
 		}
 		HexCell cell = cells[index];
-		
-		////TO COLORIZE CELLS
-		//if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-		//{
-		//	cell.terraintype = EditorController.GetActiveTerrainType();
-		//	//hexMesh.Triangulate(cells); //CHUNKS
-		//}
 
 		return cell;
-		
+	}
+
+	public HexCell GetHexCellFromCoords(HexCoordinates coordinates)
+	{
+		int maptype = this.MapType;
+		int x = 0;
+		int z = 0;
+
+		switch (maptype)   
+		{
+			case 0: //FOR POINTY-TOP HEXES
+				z = coordinates.Z;
+				x = coordinates.X + z / 2;
+				break;
+			case 1: //FOR FLAT TOP HEXES
+				x = coordinates.X;
+				//z = (coordinates.Z + x / 2) * NumberHexColumns;
+				z = (coordinates.Z + x / 2);
+				break;
+		}
+
+		if (z < 0 || z >= NumberHexRows)
+		{
+			return null;
+		}
+
+		if (x < 0 || x >= NumberHexColumns)
+		{
+			return null;
+		}
+
+		return cells[x + z * NumberHexColumns];
 	}
 	public void RefreshWorld()
 	{

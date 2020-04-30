@@ -12,6 +12,7 @@ public class EditorController : MonoBehaviour
 	public byte[] terraintypes;
 	public WorldController world;
 	public UnityEngine.UI.ToggleGroup toggleGroup;
+	int brushSize;
 	public byte ActiveTerrainType { get; protected set; }
 	public byte DefaultTerrainType { get; protected set; }
 	public int NumberColumns { get; protected set; }
@@ -96,6 +97,7 @@ public class EditorController : MonoBehaviour
 		ChunkRows = Convert.ToInt32(GameObject.Find("ChunkRows").GetComponent<TMP_InputField>().text);
 		DefaultTerrainType = GetDefaultTerrainType();
 		//world.CreateMap(MapType, DefaultTerrainType, NumberColumns, NumberRows);
+		
 		world.CreateMap(MapType, DefaultTerrainType, ChunkSize, ChunkColumns, ChunkRows);
 	}
 
@@ -106,18 +108,50 @@ public class EditorController : MonoBehaviour
 		{
 			Destroy(go);
 		}
-		//foreach (GameObject go in GameObject.FindGameObjectsWithTag("HexCell"))
-		//{
-		//	Destroy(go);
-		//}
+		foreach (GameObject go in GameObject.FindGameObjectsWithTag("HexCell"))
+		{
+			Destroy(go);
+		}
 		foreach (GameObject go in GameObject.FindGameObjectsWithTag("HexLabel"))
 		{
 			Destroy(go);
 		}
-	}
-	void EditCell()
-	{
 		
-		//world.RefreshWorld();
+	}
+	public void EditCell(HexCell hexcell)
+	{
+		if (hexcell)
+		{
+			hexcell.TerrainType = EditorController.GetActiveTerrainType();
+		}
+	}
+
+	public void EditCells(HexCell centerhexcell)
+	{
+		int centerX = centerhexcell.coordinates.X;
+		int centerZ = centerhexcell.coordinates.Z;
+
+		for (int r = 0, z = centerZ - brushSize; z <= centerZ; z++, r++)
+		{
+			for (int x = centerX - r; x <= centerX + brushSize; x++)
+			{
+				EditCell(world.GetHexCellFromCoords(new HexCoordinates(x, z)));
+			}
+		}
+		for (int r = 0, z = centerZ + brushSize; z > centerZ; z--, r++)
+		{
+			for (int x = centerX - brushSize; x <= centerX + r; x++)
+			{
+				EditCell(world.GetHexCellFromCoords(new HexCoordinates(x, z)));
+			}
+		}
+	}
+
+	public void SetBrushSize(float brushsize)
+	{
+		Debug.Log("b: " + brushSize);
+		brushSize = (int)brushsize;
+		//brushSize = brushsize;
+		//Debug.Log("brush: " + brushsize);
 	}
 }

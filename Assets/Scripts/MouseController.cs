@@ -8,6 +8,7 @@ public class MouseController : MonoBehaviour
 {
 	public WorldController world;
 	public HexCursor hexCursor;
+	public EditorController editor;
 
 	void Update()
 	{
@@ -24,12 +25,15 @@ public class MouseController : MonoBehaviour
 
 		if (Physics.Raycast(inputRay, out hit))
 		{
-			HexCell hexcell = world.GetHexCell(hit.point);
+			//HexCell hexcell = world.GetHexCell(hit.point);
+			HexCell hexcell = world.GetHexCellFromScreen(hit.point);
+
 			UpdateCursorPosition(hit.point);
 
 			if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
 			{
-				hexcell.TerrainType = EditorController.GetActiveTerrainType();
+				//editor.EditCell(hexcell); //FOR ONLY ONE CELL, W/O RADIUS
+				editor.EditCells(hexcell);  //FOR MULTIPLE CELLS, WITH RADIUS
 			}
 
 		}

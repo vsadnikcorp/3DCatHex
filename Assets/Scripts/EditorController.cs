@@ -149,9 +149,10 @@ public class EditorController : MonoBehaviour
 
 	public void SetBrushSize(float brushsize)
 	{
-		Debug.Log("b: " + brushSize);
 		brushSize = (int)brushsize;
-		//brushSize = brushsize;
-		//Debug.Log("brush: " + brushsize);
+	}
+	public void ShowUI(bool visible)
+	{
+		world.ShowUI(visible);
 	}
 }

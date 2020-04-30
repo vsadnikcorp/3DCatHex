@@ -19,6 +19,8 @@ public class ChunkController : MonoBehaviour
 		gridCanvas = GetComponentInChildren<Canvas>();
 		hexMesh = GetComponentInChildren<HexMesh>();
 		cells = new HexCell[chunksize * chunksize];
+		ShowUI(false);
+
 	}
 		
 	void LateUpdate()
@@ -38,5 +40,10 @@ public class ChunkController : MonoBehaviour
 	public void RefreshChunks()
 	{
 		enabled = true;
+	}
+
+	public void ShowUI (bool visible)
+	{
+		gridCanvas.gameObject.SetActive(visible);
 	}
 }

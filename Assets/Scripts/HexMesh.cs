@@ -66,10 +66,8 @@ public class HexMesh : MonoBehaviour
 				center + HexMetrics.corners[i],
 				center + HexMetrics.corners[i+1]
 			);
-			//Color terrainGFX = EditorController.SetTerrainGFX(cell.terraintype);
-			//Color terrainGFX = EditorController.SetTerrainGFX(cell);
-			byte terraintype = cell.terraintype;
-			Color terrainGFX = EditorController.SetTerrainGFX(cell, terraintype);
+			byte terraintype = cell.terrainType;
+			Color terrainGFX = HexMetrics.SetTerrainGFX(cell, terraintype);
 			AddTriangleColor(terrainGFX); 
 		}
 	} 

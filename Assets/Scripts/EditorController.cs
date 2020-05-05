@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Linq;
 using UnityEngine.UI;
+using System.IO;
 
 public class EditorController : MonoBehaviour
  {
@@ -43,16 +44,16 @@ public class EditorController : MonoBehaviour
 		switch (activetoggle.name.ToString())
 		{
 			case "OpenToggle":
-				terraintype = 0;
+				terraintype = (byte)HexMetrics.TerrainType.Open;
 				break;
 			case "ForestToggle":
-				terraintype = 1;
+				terraintype = (byte)HexMetrics.TerrainType.Forest;
 				break;
 			case "MountainToggle":
-				terraintype = 2;
+				terraintype = (byte)HexMetrics.TerrainType.Mountain;
 				break;
 			case "SeaToggle":
-				terraintype = 3;
+				terraintype = (byte)HexMetrics.TerrainType.Sea;
 				break;
 			default:
 				Debug.Log("No terrain type assigned!");
@@ -62,62 +63,70 @@ public class EditorController : MonoBehaviour
 		return terraintype;
 	}
 
-	public static Color SetTerrainGFX(HexCell cell, byte terraintype)
-	{
-		Color terrainGFX;
-		switch (terraintype)
-		{
-			case 0:
-				terrainGFX = Color.yellow;
-				break;
-			case 1:
-				terrainGFX = Color.green;
-				break;
-			case 2:
-				terrainGFX = Color.grey;
-				break;
-			case 3:
-				terrainGFX = Color.blue;
-				break;
-			default:
-				terrainGFX = Color.white;
-				break;
-		}
-		return terrainGFX;
-	}
+	//public static Color SetTerrainGFX(HexCell cell, byte terraintype)
+	//{
+	//	Color terrainGFX;
+	//	switch (terraintype)
+	//	{
+	//		case 0:
+	//			terrainGFX = Color.yellow;
+	//			break;
+	//		case 1:
+	//			terrainGFX = Color.green;
+	//			break;
+	//		case 2:
+	//			terrainGFX = Color.grey;
+	//			break;
+	//		case 3:
+	//			terrainGFX = Color.blue;
+	//			break;
+	//		default:
+	//			terrainGFX = Color.white;
+	//			break;
+	//	}
+	//	return terrainGFX;
+	//}
 
 	public void CreateMapButton()
 	{
-		if (world != null) ClearMap();
+		//if (world != null) ClearMap();  //
 		MapType = GameObject.Find("MapTypeDropdown").GetComponent<TMP_Dropdown>().value;
-		//NumberColumns = Convert.ToInt16(GameObject.Find("MapXText").GetComponent<TMP_InputField>().text);
-		//NumberRows = Convert.ToInt16(GameObject.Find("MapYText").GetComponent<TMP_InputField>().text);
+		NumberColumns = Convert.ToInt16(GameObject.Find("MapXText").GetComponent<TMP_InputField>().text);
+		NumberRows = Convert.ToInt16(GameObject.Find("MapYText").GetComponent<TMP_InputField>().text);
 		ChunkSize = Convert.ToInt32(GameObject.Find("ChunkSize").GetComponent<TMP_InputField>().text);
-		ChunkColumns = Convert.ToInt32(GameObject.Find("ChunkColumns").GetComponent<TMP_InputField>().text);
-		ChunkRows = Convert.ToInt32(GameObject.Find("ChunkRows").GetComponent<TMP_InputField>().text);
+		//ChunkColumns = Convert.ToInt32(GameObject.Find("ChunkColumns").GetComponent<TMP_InputField>().text);
+		//ChunkRows = Convert.ToInt32(GameObject.Find("ChunkRows").GetComponent<TMP_InputField>().text);
 		DefaultTerrainType = GetDefaultTerrainType();
-		//world.CreateMap(MapType, DefaultTerrainType, NumberColumns, NumberRows);
-		
-		world.CreateMap(MapType, DefaultTerrainType, ChunkSize, ChunkColumns, ChunkRows);
+		//world.CreateMap(MapType, DefaultTerrainType, ChunkSize, ChunkColumns, ChunkRows);
+		world.CreateMap(MapType, DefaultTerrainType, ChunkSize, NumberColumns, NumberRows);
 	}
 
-	public void ClearMap()
-	{
-
-		foreach (GameObject go in GameObject.FindGameObjectsWithTag("Chunk"))
-		{
-			Destroy(go);
-		}
-		foreach (GameObject go in GameObject.FindGameObjectsWithTag("HexCell"))
-		{
-			Destroy(go);
-		}
-		foreach (GameObject go in GameObject.FindGameObjectsWithTag("HexLabel"))
-		{
-			Destroy(go);
-		}
+	//public void ClearMap()
+	//{
 		
-	}
+	//	foreach (GameObject go in GameObject.FindGameObjectsWithTag("Chunk"))
+	//	{
+	//		Destroy(go);
+	//	}
+	//	foreach (GameObject go in GameObject.FindGameObjectsWithTag("HexCell"))
+	//	{
+	//		Destroy(go);
+	//	}
+	//	foreach (GameObject go in GameObject.FindGameObjectsWithTag("HexLabel"))
+	//	{
+	//		Destroy(go);
+	//	}
+
+		//CATLIKE TO REMOVE OLD MAP, MOVED TO WC
+		//if (chunks != null)
+		//{
+		//	for (int i = 0; i < chunks.Length; i++)
+		//	{
+		//		Destroy(chunks[i].gameObject);
+		//	}
+		//}
+	//}
+
 	public void EditCell(HexCell hexcell)
 	{
 		if (hexcell)
@@ -154,5 +163,33 @@ public class EditorController : MonoBehaviour
 	public void ShowUI(bool visible)
 	{
 		world.ShowUI(visible);
+	}
+	public void SaveMap()
+	{
+		//Debug.Log(Application.persistentDataPath);
+		string path = Path.Combine(Application.persistentDataPath, "test.map");
+		using (BinaryWriter binWriter = new BinaryWriter(File.Open(path, FileMode.Create)))
+		{
+			binWriter.Write(0);
+			world.SaveWorld(binWriter);
+		}
+	}
+
+	public void LoadMap()
+	{
+		string path = Path.Combine(Application.persistentDataPath, "test.map");
+		using (BinaryReader binReader = new BinaryReader(File.OpenRead(path)))
+		{
+			int fileHeader = binReader.ReadInt32();
+			if (fileHeader == 0)
+			{
+				//binReader.ReadInt32();
+				world.LoadWorld(binReader);
+			}
+			else
+			{
+				Debug.LogWarning("Unknown map format" + fileHeader);
+			}
+		}
 	}
 }

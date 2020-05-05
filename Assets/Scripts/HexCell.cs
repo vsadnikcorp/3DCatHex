@@ -1,40 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEngine.UI;
+using System.IO;
 
 public class HexCell : MonoBehaviour
 {
     public HexCoordinates coordinates;
-    public byte terraintype;
+    public byte terrainType;
     public RectTransform uiRect;
     public ChunkController chunk;
+    public Color terraingfx;
+    Color color;
 
-    //TODO--MAKE THIS WORK!
     public byte TerrainType
     {
         get
         {
-            return terraintype;
+            return terrainType;
         }
         set
         {
-            if (terraintype == value)
+            if (terrainType == value)
             {
-                Debug.Log("t2:" + terraintype + "value: " + value);
                 return;
             }
-            Debug.Log("t3:" + terraintype + "value: " + value);
-            terraintype = value;
-            //TerrainType = value;
+            terrainType = value;
             RefreshCell(); 
         }
     }
     public HexCoordinates Coordinates { get; protected set; }
-    Color color;
-
-    //TODO:  WILL NEED TO CHANGE TO SPRITEID ONCE TERRAIN SPRITES ARE ADDED-ACTUALLY, PROBABLY REMOVE AND USE TERRAINTYPE TO SELECT SPRITE
-    public Color terraingfx;
+   
 
     void RefreshCell()
     {
@@ -42,5 +37,15 @@ public class HexCell : MonoBehaviour
         {
             chunk.RefreshChunks();
         }
+    }
+
+    public void SaveCell(BinaryWriter binwriter)
+    {
+        binwriter.Write(terrainType);
+    }
+
+    public void LoadCell(BinaryReader binreader)
+    {
+        terrainType = binreader.ReadByte();
     }
 }

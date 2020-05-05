@@ -7,7 +7,7 @@ public static class HexMetrics
 	public const float outerRadius = 10f;
 	public const float innerRadius = outerRadius * 0.8660254037844f;
 	public static Vector3[] corners = new Vector3[7];
-	//public const short chunkSizeX = 5;
+	public static byte chunkSize;
 	//public const short chunkSizeZ = 5;
 
 	public static void Init(int mapType)
@@ -37,7 +37,37 @@ public static class HexMetrics
 				}
 				break;
 		}
+	}
 
+	public enum TerrainType : byte
+	{
+		Open,//0
+		Forest, //1
+		Mountain, //2
+		Sea //3
+	}
 
+	public static Color SetTerrainGFX(HexCell cell, byte terraintype)
+	{
+		Color terrainGFX;
+		switch (terraintype)
+		{
+			case 0:
+				terrainGFX = Color.yellow;
+				break;
+			case 1:
+				terrainGFX = Color.green;
+				break;
+			case 2:
+				terrainGFX = Color.grey;
+				break;
+			case 3:
+				terrainGFX = Color.blue;
+				break;
+			default:
+				terrainGFX = Color.white;
+				break;
+		}
+		return terrainGFX;
 	}
 }

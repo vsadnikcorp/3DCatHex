@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 using System;
 
 public class WorldController : MonoBehaviour
@@ -23,21 +24,43 @@ public class WorldController : MonoBehaviour
 
 	HexCell[] cells;
 
-	public void CreateMap(int mapType, byte defaultterraintype, int chunksize, int chunkcolumns, int chunkrows)
+	//public void CreateMap(int mapType, byte defaultterraintype, int chunksize, int chunkcolumns, int chunkrows)
+	public void CreateMap(int mapType, byte defaultterraintype, int chunksize, int numbercolumns, int numberrows)
 	{
 		this.MapType = mapType;
 		this.ChunkSize = chunksize;
-		this.ChunkColumns = chunkcolumns;
-		this.ChunkRows = chunkrows;
+		//this.ChunkColumns = chunkcolumns;
+		//this.ChunkRows = chunkrows;
 
+		if (numbercolumns <=0 || numbercolumns % chunksize != 0 || numberrows <= 0 || numberrows % chunksize != 0)
+		{
+			Debug.LogError("Map width and height must be > 0 and a multiple of " + chunksize + ".");
+			return;
+		}
+			
+		//REMOVES OLD MAP, IF ANY
+		if (chunks != null)
+		{
+			//for (int i = 0; i < chunks.Length; i++)
+			//{
+			//	Destroy(chunks[i].gameObject);
+			//}
+
+			ClearMap();
+		}
 		HexMetrics.Init(mapType);
 		hexCursor.SetActive(true);
 		hexCursor.GetComponent<HexCursor>().Init(mapType);
 		Camera.main.orthographicSize = 50.0f;
 
-		this.NumberHexColumns = chunkcolumns * chunksize;
-		this.NumberHexRows = chunkrows * chunksize;
-		//if (chunks != null) Array.Clear(chunks, 0, chunks.Length);
+		this.NumberHexColumns = numbercolumns;
+		this.NumberHexRows = numberrows;
+		this.ChunkColumns = numbercolumns / chunksize;
+		this.ChunkRows = numberrows / chunksize;
+
+		Debug.Log("CC: " + this.ChunkColumns + ", CR: " + this.ChunkRows);
+
+
 		CreateChunks();
 		CreateCells(mapType, defaultterraintype, this.NumberHexColumns, this.NumberHexRows);
 
@@ -47,6 +70,7 @@ public class WorldController : MonoBehaviour
 
 	void CreateChunks()
 	{
+		Debug.Log("cc: " + ChunkColumns + ", cr: " + ChunkRows);
 		chunks = new ChunkController[ChunkColumns * ChunkRows];
 
 		for (int z = 0, i = 0; z < ChunkRows; z++)
@@ -66,7 +90,7 @@ public class WorldController : MonoBehaviour
 	{
 		
 		cells = new HexCell[numberhexcolumns * numberhexrows];
-		Debug.Log("array" + cells.Length.ToString());
+		//Debug.Log("array" + cells.Length.ToString());
 
 		for (int z = 0, i = 0; z < numberhexrows; z++)
 		{
@@ -116,7 +140,7 @@ public class WorldController : MonoBehaviour
 
 		label.name = "Label " + cell.coordinates.ToString();
 		cell.uiRect = label.rectTransform;
-		cell.terraintype = defaultterraintype;
+		cell.terrainType = defaultterraintype;
 		AddCellToChunk(x, z, cell);
 	}
 
@@ -198,6 +222,42 @@ public class WorldController : MonoBehaviour
 		for (int i = 0; i < chunks.Length; i++)
 		{
 			chunks[i].ShowUI(visible);
+		}
+	}
+
+	public void SaveWorld(BinaryWriter binwriter)
+	{
+		for (int i = 0; i < cells.Length; i++)
+		{
+			cells[i].SaveCell(binwriter);
+		}
+	}
+
+	public void LoadWorld(BinaryReader binreader)
+	{
+		for (int i = 0; i < cells.Length; i++)
+		{
+			cells[i].LoadCell(binreader);
+		}
+		for (int i = 0; i < chunks.Length; i++)
+		{
+			chunks[i].RefreshChunks();
+		}
+	}
+
+	public void ClearMap()
+	{
+		if (chunks != null)
+		{
+			Toggle toggle = GameObject.Find("CoordsToggle").GetComponent<Toggle>();
+			toggle.isOn = false;
+
+			//toggle.onValueChange.Invoke(true);
+
+			for (int i = 0; i < chunks.Length; i++)
+			{
+				Destroy(chunks[i].gameObject);
+			}
 		}
 	}
 }
